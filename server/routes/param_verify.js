@@ -4,9 +4,9 @@ var us = require('underscore');
 
 var db = require('../models/db');
 var config = require('../config');
-var ERR = require('../util/errorcode');
-var Util = require('../util/util');
-var Logger = require('../util/logger');
+var ERR = require('../errorcode');
+var Util = require('../util');
+var Logger = require('../logger');
 var ParamConfig = require('./param_config');
 
 var OBJECT_ID_LENGTH = 24;
@@ -150,6 +150,7 @@ function getChecker(type) {
 
 function verifyParam(value, pcfg, parameter, callback) {
     var valueHasSet = typeof value !== 'undefined';
+
     if (!valueHasSet && pcfg.required) {
         return callback(pcfg.name + ' is required');
     }
@@ -226,6 +227,7 @@ exports.checkParams = function(req, res, next) {
 
     cfgParams.forEach(function(pcfg) {
         var value = req.param(pcfg.name);
+
         verifyParam(value, pcfg, parameter, ep.group('verifyParamDone'));
     });
 

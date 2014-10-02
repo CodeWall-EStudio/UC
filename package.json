@@ -11,6 +11,7 @@
         "underscore": "*",
         "eventproxy": "*",
         "mongodb": "*",
-        "oauth2-server":"*"
+        "oauth2-server":"*",
+        "connect-mongo":"*"
     }
 }

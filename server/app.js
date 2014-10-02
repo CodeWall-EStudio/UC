@@ -2,6 +2,7 @@
  * Module dependencies.
  */
 var express = require('express');
+var MongoStore = require('connect-mongo')(express);
 var http = require('http');
 var path = require('path');
 var authServer = require('oauth2-server');
@@ -11,6 +12,7 @@ var config = require('./config');
 var routes = require('./routes');
 var Logger = require('./logger');
 
+var loginApi = require('./api/login');
 
 var app = express();
 
@@ -46,7 +48,12 @@ app.use(express.session({
     cookie: {
         maxAge: config.COOKIE_TIME,
         httpOnly: true
-    } // 2 hour)
+    }, // 2 hour)
+    store: new MongoStore({
+        url: config.DB_URI
+    }, function () {
+        Logger.info('session db connection open');
+    })
 }));
 
 
@@ -68,34 +75,33 @@ if ('development' == app.get('env')) {
 app.post('/oauth/token', app.oauth.grant());
 
 // 检查是否登录, 如果没有登录, 跳转到登录页
-app.all('/oauth/authorise', routes.checkAuthAndLogin);
+app.all('/oauth/authorise', loginApi.checkAuthAndLogin);
 
 app.get('/oauth/authorise', app.oauth.authCodeGrant(function(req, next) {
     // next(err, allowed, user);
-    // TODO 这里要校验用户是否登录, 以及读取用户信息出来
-    next(null, true);
+    next(null, true, req.loginUser);
 }));
 
 app.all('/oauth/verify', app.oauth.authorise(), function(req, res) {
     // res.send('Secret area');
-    res.send(req.user);
+    res.send(req.loginUser);
 });
 
 // 设置跨域请求头
 app.all('/api/*', routes.setXHR2Headers);
 
 
-// // 检查是否登录, 如果登录了, 从数据库把用户信息找出; 没有登录则返回错误
+// 检查是否登录, 如果登录了, 从数据库把用户信息找出; 没有登录则返回错误
 // app.all('/api/*', routes.checkAuth);
 
-// // 检查参数合法性
-// app.all('/api/*', routes.checkParams);
+// 检查参数合法性
+app.all('/api/*', routes.checkParams);
 
-// // 检查 API 调用权限
+// 检查 API 调用权限
 // app.all('/api/*', routes.checkAPI);
 
 // 路由请求
-app.all('/*', routes.route);
+app.all('/api/*', routes.route);
 
 app.use(app.oauth.errorHandler());
 
