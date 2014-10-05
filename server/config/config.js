@@ -18,7 +18,7 @@ exports.DB_URI = 'mongodb://xzone_user:HeMHFxTAMPAjlRVH@127.0.0.1:27017/usercent
 exports.APP_DOMAIN = 'uuu.codewalle.com';
 
 // 允许的授权类型
-exports.ALLOW_GRANT_TYPES = ['password', 'authorization_code', 'refresh_token'];
+exports.ALLOW_GRANT_TYPES = ['password', 'authorization_code'/*, 'refresh_token'*/];
 
 // cookie 的加密key
 exports.COOKIE_SECRET= 'HeMHFxTAMPAjlRVH_secret';
@@ -26,23 +26,10 @@ exports.COOKIE_SECRET= 'HeMHFxTAMPAjlRVH_secret';
 // cookie 的有效时间
 exports.COOKIE_TIME = 24 * 60 * 60 * 1000; // 24 小时
 
-exports.STATIC_FILE_EXPIRES = 7 * 24 * 60 * 60 * 1000; // 静态文件的过期时间
+exports.STATIC_FILE_EXPIRES = 7 * 24 * 60 * 60 * 1000; // 静态文件的过期时间 7 天
 
 // 允许新媒体跨域上传和下载资源的 host
 exports.XHR2_ALLOW_ORIGIN = [  ];
-
-
-// 一些页面 url 的常量
-exports.INDEX_PAGE = '/index.html';
-
-exports.LOGIN_PAGE = '/login.html';
-
-exports.INFO_PAGE = '/info.html';
-
-exports.LOGIN_FAIL_PAGE = '/loginfail.html';
-
-exports.NOT_FOUND_PAGE = '/404.html';
-
 
 // ==== 业务逻辑相关的配置 ====================================================
 
