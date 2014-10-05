@@ -2,7 +2,7 @@
 
 module.exports = {
 
-    '/api/login': {
+    '/cgi/login': {
         method: 'POST',
         params: [
             {

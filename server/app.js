@@ -11,8 +11,11 @@ var authModel = require('./models/auth');
 var config = require('./config');
 var routes = require('./routes');
 var Logger = require('./logger');
+var Util = require('./util');
+var ERR = require('./errorcode');
 
-var loginApi = require('./api/login');
+var db = require('./models/db');
+var loginCgi = require('./cgi/login');
 
 var app = express();
 
@@ -43,15 +46,15 @@ app.use(express.methodOverride());
 
 app.use(express.cookieParser());
 app.use(express.session({
-    key: 'skey',
+    key: 'oauth.sid',
     secret: config.COOKIE_SECRET,
     cookie: {
-        maxAge: config.COOKIE_TIME,
+        maxAge: config.COOKIE_TIME, // 2 hour
         httpOnly: true
-    }, // 2 hour)
+    },
     store: new MongoStore({
         url: config.DB_URI
-    }, function () {
+    }, function() {
         Logger.info('session db connection open');
     })
 }));
@@ -68,24 +71,21 @@ if ('development' == app.get('env')) {
 }
 
 
+/////////// oauth 相关 ///////////////
 
-//app.all(config.INDEX_PAGE, routes.checkAuthAndLogin);
-// app.all('/', routes.index);
-
+// 获取token
 app.post('/oauth/token', app.oauth.grant());
 
 // 检查是否登录, 如果没有登录, 跳转到登录页
-app.all('/oauth/authorise', loginApi.checkAuthAndLogin);
-
-app.get('/oauth/authorise', app.oauth.authCodeGrant(function(req, next) {
-    // next(err, allowed, user);
+app.get('/oauth/authorise', loginCgi.checkAuthAndLogin, app.oauth.authCodeGrant(function(req, next) {
     next(null, true, req.loginUser);
 }));
 
-app.all('/oauth/verify', app.oauth.authorise(), function(req, res) {
-    // res.send('Secret area');
-    res.send(req.loginUser);
-});
+// 获取用户信息和 openid
+app.all('/oauth/verify', app.oauth.authorise(), loginCgi.getAuthUser);
+
+
+/////////// API 相关 ///////////////
 
 // 设置跨域请求头
 app.all('/api/*', routes.setXHR2Headers);
@@ -102,6 +102,12 @@ app.all('/api/*', routes.checkParams);
 
 // 路由请求
 app.all('/api/*', routes.route);
+
+// 检查参数合法性
+app.all('/cgi/*', routes.checkParams);
+
+// 路由请求
+app.all('/cgi/*', routes.route);
 
 app.use(app.oauth.errorHandler());
 
