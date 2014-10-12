@@ -2,11 +2,11 @@ var EventProxy = require('eventproxy');
 var ObjectID = require('mongodb').ObjectID;
 var us = require('underscore');
 
-var db = require('../models/db');
-var config = require('../config');
-var ERR = require('../errorcode');
-var Util = require('../util');
-var Logger = require('../logger');
+var db = require('../../models/db');
+var config = require('../../config');
+var ERR = require('../../errorcode');
+var Util = require('../../util');
+var Logger = require('../../logger');
 var ParamConfig = require('./param_config');
 
 var OBJECT_ID_LENGTH = 24;

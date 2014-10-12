@@ -5,6 +5,7 @@ var http = require('http');
 var https = require('https');
 
 var url = require('url');
+var querystring = require('querystring');
 var crypto = require('crypto');
 
 var us = require('underscore');
@@ -57,7 +58,7 @@ exports.formatDate = function(date, format) {
         "q+": Math.floor((date.getMonth() + 3) / 3), // quarter
         "S": date.getMilliseconds()
         // millisecond
-    }
+    };
 
     if (/(y+)/.test(format)) {
         format = format.replace(RegExp.$1, (date.getFullYear() + "").substr(4 - RegExp.$1.length));
@@ -135,29 +136,35 @@ exports.request = function(params, callback) {
 
     var options = {
         hostname: obj.hostname,
+        port: obj.port,
         path: obj.path
     };
 
     options.method = params.method;
-    if (params.headers) {
-        options.headers = params.headers;
-    }
+    options.headers = params.headers || {};
 
     var req = (obj.protocol === 'https:' ? https : http).request(options, function(res) {
-        res.setEncoding('utf8');
-        var response = '';
-        res.on('error', callback);
+        if (res.statusCode === 200) {
+            res.setEncoding(params.encoding || 'utf8');
+            var response = '';
+            res.on('error', callback);
 
-        res.on('data', function(chunk) {
-            response += chunk;
-        });
-        res.on('end', function() {
-            callback(null, response);
-        });
+            res.on('data', function(chunk) {
+                response += chunk;
+            });
+            res.on('end', function() {
+                callback(null, response, res);
+            });
+
+        } else {
+            callback(null, '', res);
+        }
+
     });
     if (options.method === 'POST' && params.data) {
-        req.write(params.data + '\n');
+        req.write(params.data);
     }
+    req.on('error', callback);
     req.end();
 };
 
@@ -182,67 +189,37 @@ exports.removePrivateMethods = function(obj) {
     }
 };
 
-/**
- * 格式化日期
- * @param {Date} date
- * @param {String} format "yyyy-MM-dd hh:mm:ss"
- */
-exports.formatDate = function(date, format) {
-    /*
-     * eg:format="yyyy-MM-dd hh:mm:ss";
-     */
-    var o = {
-        "M+": date.getMonth() + 1, // month
-        "d+": date.getDate(), // day
-        "h+": date.getHours(), // hour
-        "m+": date.getMinutes(), // minute
-        "s+": date.getSeconds(), // second
-        "q+": Math.floor((date.getMonth() + 3) / 3), // quarter
-        "S": date.getMilliseconds()
-        // millisecond
-    };
-
-    if (/(y+)/.test(format)) {
-        format = format.replace(RegExp.$1, (date.getFullYear() + "").substr(4 - RegExp.$1.length));
-    }
-
-    for (var k in o) {
-        if (new RegExp("(" + k + ")").test(format)) {
-            format = format.replace(RegExp.$1, RegExp.$1.length === 1 ? o[k] : ("00" + o[k]).substr(("" + o[k]).length));
-        }
-    }
-    return format;
-};
 
 exports.md5 = function(text) {
     return crypto.createHash('md5').update(text).digest('hex');
 };
 
 
-exports.forEach = function(array, onEach, onDone){
+exports.forEach = function(array, onEach, onDone) {
 
     var keys = null;
-    if(!us.isArray(array)){
+    if (!us.isArray(array)) {
 
-        if(us.isObject(array)){
+        if (us.isObject(array)) {
 
             keys = [];
-            for(var i in array){
+            for (var i in array) {
 
-                if(array.hasOwnProperty(i) && i !== 'length'){
+                if (array.hasOwnProperty(i) && i !== 'length') {
 
                     keys.push(i);
                 }
             }
-        }else{
+        } else {
 
             throw new Error('not an array or a object');
         }
     }
-    var index = -1, count = (keys || array).length;
+    var index = -1,
+        count = (keys || array).length;
     var next = function() {
 
-        if(++index >= count){
+        if (++index >= count) {
 
             onDone && onDone(count);
             return;
@@ -251,15 +228,15 @@ exports.forEach = function(array, onEach, onDone){
         onEach && onEach(array[key], key, next);
     };
     next();
-}
+};
 
 
-exports.startsWith = function(str, start){
+exports.startsWith = function(str, start) {
     var index = str.indexOf(start);
     return index === 0;
-}
+};
 
-exports.endsWith = function(str, end){
+exports.endsWith = function(str, end) {
     var index = str.lastIndexOf(end);
     return index !== -1 && index + end.length === str.length;
-}
+};

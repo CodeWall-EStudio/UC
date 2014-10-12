@@ -14,9 +14,6 @@ var Logger = require('./logger');
 var Util = require('./util');
 var ERR = require('./errorcode');
 
-var db = require('./models/db');
-var loginCgi = require('./cgi/login');
-
 var app = express();
 
 app.oauth = authServer({
@@ -74,15 +71,15 @@ if ('development' == app.get('env')) {
 /////////// oauth 相关 ///////////////
 
 // 获取token
-app.post('/oauth/token', app.oauth.grant());
+app.post('/oauth/token', routes.checkAuthMode, app.oauth.grant());
 
 // 检查是否登录, 如果没有登录, 跳转到登录页
-app.get('/oauth/authorise', loginCgi.checkAuthAndLogin, app.oauth.authCodeGrant(function(req, next) {
+app.get('/oauth/authorise', routes.checkAuthMode, routes.checkAuthAndLogin, app.oauth.authCodeGrant(function(req, next) {
     next(null, true, req.loginUser);
 }));
 
 // 获取用户信息和 openid
-app.all('/oauth/verify', app.oauth.authorise(), loginCgi.getAuthUser);
+app.all('/oauth/verify', app.oauth.authorise(), routes.getAuthUser);
 
 
 /////////// API 相关 ///////////////

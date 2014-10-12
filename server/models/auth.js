@@ -16,7 +16,7 @@ exports.getAccessToken = function(bearerToken, callback) {
 
 exports.getClient = function(clientId, clientSecret, callback) {
     console.log('in getClient (clientId: ' + clientId + ', clientSecret: ' + clientSecret + ')');
-    if (clientSecret === null) {
+    if (clientSecret === null || clientSecret === undefined) {
         return db.OAuthClients.findOne({
             clientId: clientId
         }, callback);

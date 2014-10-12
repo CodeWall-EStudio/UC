@@ -4,6 +4,8 @@ var fs = require('fs');
 
 var Logger = require('../logger');
 
+us.extend(exports, require('./constants'));
+
 us.extend(exports, require('./config'));
 
 // 从上一级目录(跟 server/ 同级的config.js)读取系统的个性配置
