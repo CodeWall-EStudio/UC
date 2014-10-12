@@ -81,32 +81,40 @@ exports.setXHR2Headers = function(req, res, next) {
  * @param  {Function} next [description]
  * @return {[type]}        [description]
  */
-exports.checkAuthMode = function(req, res, next){
+exports.checkAuthMode = function(req, res, next) {
     var clientId = req.param('client_id');
     var clientSecret = req.param('client_secret');
     var grantType = req.param('grant_type');
 
-    authModel.getClient(clientId, clientSecret, function(err, client){
+    authModel.getClient(clientId, clientSecret, function(err, client) {
         if (err) {
             res.json({
                 err: ERR.SERVER_ERROR,
                 msg: 'verify user error'
             });
-        }else if(!client){
+        } else if (!client) {
             res.json({
                 err: ERR.NOT_FOUND,
                 msg: 'no such client_id'
             });
-        }else{
+        } else {
             req.oauthClient = client;
-            if(req.path === '/oauth/token' && client.allowGrantTypes.indexOf(grantType) === -1){
+            if (req.path === '/oauth/authorise' && client.allowGrantTypes.indexOf('authorization_code') === -1) {
                 res.json({
                     err: ERR.NOT_SUPPORT,
                     msg: 'this client_id doesn\'t support this grant_type'
                 });
                 return;
             }
-            if(req.path === '/oauth/token' && client.authType !== 'usercenter'){
+
+            if (req.path === '/oauth/token' && client.allowGrantTypes.indexOf(grantType) === -1) {
+                res.json({
+                    err: ERR.NOT_SUPPORT,
+                    msg: 'this client_id doesn\'t support this grant_type'
+                });
+                return;
+            }
+            if (req.path === '/oauth/token' && client.authType !== 'usercenter') {
                 exports.checkAuthAndLogin(req, res, next);
                 return;
             }
@@ -120,7 +128,7 @@ exports.checkAuthMode = function(req, res, next){
  * 检查是否登录, 如果没有登录, 跳转到登录页
  */
 exports.checkAuthAndLogin = function(req, res, next) {
-    
+
     var client = req.oauthClient;
     var authType = client.authType;
 
@@ -131,7 +139,7 @@ exports.checkAuthAndLogin = function(req, res, next) {
     var loginUid = req.session['loginUid'];
     if (!loginUid) {
         Logger.info('[checkAuthAndLogin] goto login', 'path: ', path, ', method: ', method);
-        
+
         loginModule.login(req, res, next);
         return;
     }

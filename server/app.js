@@ -21,8 +21,8 @@ app.oauth = authServer({
     grants: config.ALLOW_GRANT_TYPES,
     accessTokenLifetime: 3600 * 24 * 30,
     refreshTokenLifetime: 3600 * 24 * 30 * 3,
-    authCodeLifetime: 3600,
-    debug: true
+    authCodeLifetime: 3600
+    // debug: true
 });
 
 
