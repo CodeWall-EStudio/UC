@@ -1,4 +1,4 @@
 
 npm install
 
-expect setup_db.sh
+expect setup_db.expect
