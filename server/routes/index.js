@@ -6,6 +6,7 @@ var db = require('../models/db');
 var ERR = require('../errorcode');
 var config = require('../config');
 var Logger = require('../logger');
+var Util = require('../util');
 
 var authModel = require('../models/auth');
 

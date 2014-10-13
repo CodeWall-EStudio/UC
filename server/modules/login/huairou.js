@@ -19,7 +19,7 @@ var CONST_USERINFO_PATH = 'http://sso.edures.bjedu.cn/auth/authInfoAction.do';
 
 iconv.extendNodeEncodings();
 
-exports.login = function(req, res, next){
+exports.login = function(req, res, next) {
     var username = req.param('username');
     var password = req.param('password');
 
@@ -42,9 +42,9 @@ exports.login = function(req, res, next){
             'Content-Length': data.length
         },
         data: data
-    }, function(err, data, response){
-        
-        if(err){
+    }, function(err, data, response) {
+
+        if (err) {
             res.json({
                 err: ERR.SERVER_ERROR,
                 msg: err
@@ -60,17 +60,19 @@ exports.login = function(req, res, next){
                 auth_key: obj.auth_key
             };
             getUserInfoAndLogin(req, res, next);
-        }else {
+        } else {
             res.json({
-                err: ERR.SERVER_ERROR,
-                msg: data
+                err: ERR.LOGIN_FAILURE,
+                msg: '[huairou.login] login failure'
             });
+            Logger.info('[huairou.login] failure: ', data);
+
             return;
         }
     });
 };
 
-function getUserInfoAndLogin(req, res, next){
+function getUserInfoAndLogin(req, res, next) {
     var username = req.parameter.username;
     var password = req.param('password');
 
@@ -88,16 +90,16 @@ function getUserInfoAndLogin(req, res, next){
             'Content-Length': data.length
         },
         data: data
-    }, function(err, data){
-        if(err){
+    }, function(err, data) {
+        if (err) {
             res.json({
                 err: ERR.SERVER_ERROR,
                 msg: err
             });
             return;
         }
-        parseXMLString(data, function(err, data){
-            if(err){
+        parseXMLString(data, function(err, data) {
+            if (err) {
                 res.json({
                     err: ERR.SERVER_ERROR,
                     msg: err
@@ -136,7 +138,7 @@ function getUserInfoAndLogin(req, res, next){
             });
 
         });
-        
+
     });
 
 }

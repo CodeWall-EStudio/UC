@@ -173,4 +173,5 @@ exports.addHelper(exports, 'OAuthClients');
 exports.addHelper(exports, 'OAuthCodes');
 
 exports.addHelper(exports, 'Users');
-exports.addHelper(exports, 'Groups');
+exports.addHelper(exports, 'Organizations');
+exports.addHelper(exports, 'OrganizationUsers');
