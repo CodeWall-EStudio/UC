@@ -47,7 +47,7 @@ exports.saveAccessToken = function(token, clientId, expires, user, callback) {
     var userId = user._id || user.id;
     console.log('in saveAccessToken (token: ' + token + ', clientId: ' + clientId + ', userId: ' + userId + ', expires: ' + expires + ')');
 
-    db.OAuthAccessTokens.save({
+    db.OAuthAccessTokens.create({
         accessToken: token,
         clientId: clientId,
         userId: userId,
@@ -77,7 +77,7 @@ exports.saveRefreshToken = function(token, clientId, expires, user, callback) {
     var userId = user._id || user.id;
     console.log('in saveRefreshToken (token: ' + token + ', clientId: ' + clientId + ', userId: ' + userId + ', expires: ' + expires + ')');
 
-    db.OAuthRefreshTokens.save({
+    db.OAuthRefreshTokens.create({
         refreshToken: token,
         clientId: clientId,
         userId: userId,
@@ -105,7 +105,7 @@ exports.saveAuthCode = function(authCode, clientId, expires, user, callback) {
     var userId = user._id || user.id;
     console.log('in saveAuthCode (authCode: ' + authCode + ', clientId: ' + clientId + ', userId: ' + userId + ', expires: ' + expires + ')');
 
-    db.OAuthCodes.save({
+    db.OAuthCodes.create({
         authCode: authCode,
         clientId: clientId,
         userId: userId,
