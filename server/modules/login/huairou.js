@@ -121,7 +121,7 @@ function getUserInfoAndLogin(req, res, next) {
                     req.loginUser = user;
                     user.nick = userInfo.name[0];
                     user.password = Util.md5(password);
-                    db.Users.create(user, next);
+                    user.save(next);
                     Logger.info('[huairou.login] update userinfo: ', user);
                 } else {
                     // 不存在的, 插入一条记录
