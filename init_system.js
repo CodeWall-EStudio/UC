@@ -7,6 +7,10 @@ db.OAuthClients.create({
     allowGrantTypes: ['password'],
     authType: 'usercenter',
     name: '工作室'
-}, function(err) {
-    console.log('inited with error: ', err);
+});
+db.Users.create({
+    username: 'azrael',
+    password: '9a26f23b24bc2cd94e3f17d5496ebd7b',
+    nick: 'Azrael',
+    status: 0
 });
