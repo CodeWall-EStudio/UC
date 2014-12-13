@@ -37,8 +37,12 @@ function getRouter(uri, method) {
 }
 
 exports.route = function(req, res, next) {
+
+    var host = req.protocol + '://' + req.headers.host;
     var path = req.redirectPath || req.path;
     var method = req.method;
+
+    req.appDomain = host;
 
     var router = getRouter(path, method);
     if (router) {

@@ -1,4 +1,3 @@
-var path = require('path');
 
 // debug 模式, 会输出一些调试用的 log
 exports.DEBUG = true;
@@ -14,8 +13,6 @@ exports.DB_URI = 'mongodb://xzone_user:HeMHFxTAMPAjlRVH@127.0.0.1:27017/usercent
 
 // ==== 应用自身相关的配置 ====================================================
 
-// 应用运行的域名
-exports.APP_DOMAIN = 'http://uc.codewalle.com';
 
 // 允许的授权类型
 exports.ALLOW_GRANT_TYPES = ['password', 'authorization_code'/*, 'refresh_token'*/];

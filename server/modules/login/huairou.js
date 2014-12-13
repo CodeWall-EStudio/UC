@@ -25,7 +25,7 @@ exports.login = function(req, res, next) {
 
 
     var data = querystring.stringify({
-        auth_url: config.APP_DOMAIN + '/cgi/login/huairouLoginSuccess',
+        auth_url: req.appDomain + '/cgi/login/huairouLoginSuccess',
         auth_key: req.session.id,
         auth_logining: 1,
         auth_username: username,

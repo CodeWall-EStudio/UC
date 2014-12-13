@@ -21,7 +21,8 @@ app.oauth = authServer({
     grants: config.ALLOW_GRANT_TYPES,
     accessTokenLifetime: 3600 * 24 * 30,
     refreshTokenLifetime: 3600 * 24 * 30 * 3,
-    authCodeLifetime: 3600
+    authCodeLifetime: 3600,
+    passthroughErrors: true,
     // debug: true
 });
 
@@ -73,6 +74,7 @@ if ('development' == app.get('env')) {
 // 获取token
 app.post('/oauth/token', routes.checkAuthMode, app.oauth.grant());
 
+
 // 检查是否登录, 如果没有登录, 跳转到登录页
 app.get('/oauth/authorise', routes.checkAuthMode, routes.checkAuthAndLogin, app.oauth.authCodeGrant(function(req, next) {
     next(null, true, req.loginUser);
@@ -106,7 +108,7 @@ app.all('/cgi/*', routes.checkParams);
 // 路由请求
 app.all('/cgi/*', routes.route);
 
-app.use(app.oauth.errorHandler());
+// app.use(app.oauth.errorHandler());
 
 http.createServer(app).listen(app.get('port'), function() {
     Logger.info('Express server listening on port ' + app.get('port'));
